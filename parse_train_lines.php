@@ -13,7 +13,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/train-line.class.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/datalayer.class.php";
 
 // Variables
-$upload_dir = "{$_SERVER['DOCUMENT_ROOT']}";
+$upload_dir = "{$_SERVER['DOCUMENT_ROOT']}\\upload";
 
 try {
 	/* ---------------------------------
@@ -50,7 +50,7 @@ try {
 		//}
 
 		// Save file on the server
-		move_uploaded_file($tmp_location, $uploaded_file_path) or die("Unable to move file ${uploaded_file_path}");
+		move_uploaded_file($tmp_location, $uploaded_file_path) or die("Unable to move file from $tmp_location to ${uploaded_file_path}");
 
 		// Read file contents into an array of lines
 		$lines_array = file($uploaded_file_path);
