@@ -9,6 +9,10 @@
 // Author: 	Simon Renert
 // Date:		07/31/2014
 ////////////////////////////////////////////////////
+// Change Log
+// Date			Initials		Comments
+// 08/01/2014	SR				Tested and enabled mysql backend functionality
+////////////////////////////////////////////////////
 require_once $_SERVER['DOCUMENT_ROOT'] . "/train-line.class.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/datalayer.class.php";
 
@@ -16,15 +20,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/datalayer.class.php";
 $upload_dir = "{$_SERVER['DOCUMENT_ROOT']}\\upload";
 
 try {
-	/* ---------------------------------
-	// NOTES: I don't have access to MySQL database to actually run this code
-	// ---------------------------------
 	// Connect to MySQL
 	$datalayer = new DataLayer();
-	*/
 }
 catch (Exception $e) {
-	echo "Unable to connect to MySQL db";
+	echo "Unable to connect to MySQL db! {$e->getMessage()}";
 	exit;
 }
 
@@ -104,19 +104,17 @@ try {
 
 		// Display results to user
 		foreach($train_lines_array as $run_number => $train_line_obj){
-			/* ---------------------------------
-			// NOTES: I don't have access to MySQL database to actually run this code
-			// ---------------------------------
 			// Record data in db
 			$mysqli_statement = $train_line_obj->PrepareRecordToInsertIntoDB($datalayer->getConn());
 
 			if (!is_null($mysqli_statement)) {
-				$datalayer->WriteRecordToDB($mysqli_statement);
+				if (!$datalayer->WriteRecordToDB($mysqli_statement)) {
+					throw new Exception("Unable to save record for run number {$train_line_obj->getRunNumber()}. Possibly duplicate data.");
+				}
 			}
-			*/
 
 			// Create output
-			$output.= $train_line_obj->GenerateTableRowMarkup();
+			$output.= $train_line_obj->GenerateTableRowMarkup(0);
 		}
 
 		echo "<table>$output</table>";
@@ -129,10 +127,6 @@ catch (Exception $e) {
 	echo "<a href=\"upload_train_lines.html\">Upload another</a>";
 }
 
-/* ---------------------------------
-// NOTES: I don't have access to MySQL database to actually run this code
-// ---------------------------------
 // Close connection
 $datalayer->CloseConnection();
-*/
 ?>
